@@ -1,16 +1,6 @@
-# nimble_neck
+# Nimble Neck
 
-Track the mobility of your neck
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* Tracks the mobility of your neck
+* Source of 3D Head Model
+    * https://www.turbosquid.com/de/3d-models/soldier-head-3d-model-1765707
+* Tested on iPhone 13 Pro, iOS 17.1.2
