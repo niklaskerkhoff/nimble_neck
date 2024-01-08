@@ -4,8 +4,12 @@ import 'package:nimble_neck/model/recording.dart';
 
 import '../utils/number-utils.dart';
 
+/// Dismissible list item for a [Recording]
 class RecordingItem extends StatelessWidget {
+  /// Recording to be displayed
   final Recording recording;
+
+  /// Callback for when the item is dismissed
   final VoidCallback onDismissed;
 
   const RecordingItem(
@@ -29,7 +33,7 @@ class RecordingItem extends StatelessWidget {
                 style: TextStyle(color: Colors.white)),
           )),
       child: ListTile(
-        title: buildTitle(),
+        title: _buildTitle(),
         subtitle: RecordingValues(
           recording: recording,
         ),
@@ -37,7 +41,8 @@ class RecordingItem extends StatelessWidget {
     );
   }
 
-  Widget buildTitle() {
+  /// Returns the time and date of the [recording] in a [Text]
+  Widget _buildTitle() {
     final months = [
       'January',
       'February',
@@ -54,6 +59,6 @@ class RecordingItem extends StatelessWidget {
     ];
 
     return Text(
-        '${leadingZeroToDigit(recording.datetime.hour)}:${leadingZeroToDigit(recording.datetime.minute)}, ${recording.datetime.day} ${months[recording.datetime.month - 1]}');
+        '${leadingZeroToDigit(recording.datetime.hour)}:${leadingZeroToDigit(recording.datetime.minute)}, ${recording.datetime.day} ${months[recording.datetime.month - 1]} ${recording.datetime.year}');
   }
 }

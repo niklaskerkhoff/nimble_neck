@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../model/recording.dart';
 
+/// Displays all [RecordingValues] of a [Recording]
 class RecordingValues extends StatelessWidget {
+  /// Recording to be displayed
   final Recording recording;
 
   const RecordingValues({super.key, required this.recording});

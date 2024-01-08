@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:open_earable_flutter/src/open_earable_flutter.dart';
 
+/// Allows the user to connect to an [OpenEarable]
 class DiscoveredDevicesDialog extends StatefulWidget {
+  /// [OpenEarable] instance which shall hold the connection
   final OpenEarable openEarable;
 
   const DiscoveredDevicesDialog({super.key, required this.openEarable});
@@ -67,6 +69,7 @@ class _DiscoveredDevicesDialogState extends State<DiscoveredDevicesDialog> {
     );
   }
 
+  /// Shows the connection state of a listed device
   Widget _buildTrailingWidget(String id, BuildContext context) {
     if (widget.openEarable.bleManager.connectedDevice?.id == id) {
       return Icon(
@@ -80,6 +83,7 @@ class _DiscoveredDevicesDialogState extends State<DiscoveredDevicesDialog> {
     return const SizedBox.shrink();
   }
 
+  /// Starts scanning for devices and adds them to [_discoveredDevices]
   void _startScanning() async {
     setState(() {
       _discoveredDevices = [];
@@ -103,6 +107,7 @@ class _DiscoveredDevicesDialogState extends State<DiscoveredDevicesDialog> {
     });
   }
 
+  /// Listens for connection changes and updates the UI in this case
   void _updateOnConnectionStateChange() async {
     _connectionStateStream =
         widget.openEarable.bleManager.connectionStateStream.listen((connected) {
@@ -110,6 +115,7 @@ class _DiscoveredDevicesDialogState extends State<DiscoveredDevicesDialog> {
     });
   }
 
+  /// Connects to device and stops scanning
   void _connectToDevice(device) {
     _scanSubscription?.cancel();
     widget.openEarable.bleManager.connectToDevice(device);

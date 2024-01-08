@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:nimble_neck/pages/recordings_page.dart';
 
+/// Starts the app [NimbleNeckApp]
 void main() {
-  runApp(const MyApp());
+  runApp(const NimbleNeckApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+/// Creates a Material 3 app
+/// Sets the [RecordingsPage] as starting point
+class NimbleNeckApp extends StatelessWidget {
+  const NimbleNeckApp({super.key});
 
   @override
   Widget build(BuildContext context) {

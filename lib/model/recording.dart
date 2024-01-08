@@ -3,6 +3,7 @@ import 'package:nimble_neck/model/record_value.dart';
 
 import '../utils/number-utils.dart';
 
+/// Defines a storable recording
 class Recording extends Entity {
   Recording({
     String? id,
@@ -17,24 +18,15 @@ class Recording extends Entity {
   final RecordValue roll;
   final RecordValue pitch;
 
-  Recording copyWith(
-      {DateTime? datetime,
-      RecordValue? yaw,
-      RecordValue? roll,
-      RecordValue? pitch}) {
-    return Recording(
-      id: id,
-      datetime: datetime ?? this.datetime,
-      yaw: yaw ?? this.yaw,
-      roll: roll ?? this.roll,
-      pitch: pitch ?? this.pitch,
-    );
-  }
-
+  /// Encodes the recording separating its fields by comma
+  /// This can be considered as CSV-Format encoding
+  /// Returns a [String]
   String encode() {
     return "$id,${datetime.year}-${leadingZeroToDigit(datetime.month)}-${leadingZeroToDigit(datetime.day)} ${leadingZeroToDigit(datetime.hour)}:${leadingZeroToDigit(datetime.minute)},${roll.min},${roll.max},${pitch.min},${pitch.max},${yaw.min},${yaw.max}";
   }
 
+  /// Decodes a record encoded by [encoded]
+  /// Returns a [Recording]
   static Recording decode(String encoded) {
     final parts = encoded.split(',');
     return Recording(

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:nimble_neck/components/recording_item.dart';
-import 'package:nimble_neck/pages/recording_editor_page.dart';
+import 'package:nimble_neck/pages/add_recording_page.dart';
 import 'package:open_earable_flutter/src/open_earable_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../model/recording.dart';
 
+/// Displays the stored recordings
+/// Lets the user delete the shown recordings
+/// Lets the user navigate to [AddRecordingPage]
 class RecordingsPage extends StatefulWidget {
   const RecordingsPage({super.key});
 
@@ -44,7 +47,7 @@ class _RecordingsPageState extends State<RecordingsPage> {
           Navigator.push(
               context,
               MaterialPageRoute(
-                  builder: (context) => RecordingEditorPage(
+                  builder: (context) => AddRecordingPage(
                         openEarable: _openEarable,
                         saveRecording: _save,
                       )))
@@ -55,12 +58,16 @@ class _RecordingsPageState extends State<RecordingsPage> {
     );
   }
 
+  /// Adds a [recording] to [_recordings]
+  /// Stores the updated [_recordings]
   _save(Recording recording) {
     _recordings.add(recording);
     storeRecordings();
     setState(() {});
   }
 
+  /// Deletes a [recording] in [_recordings]
+  /// Stores the updated [_recordings]
   _delete(Recording recording) {
     _recordings =
         _recordings.where((element) => element.id != recording.id).toList();
@@ -68,6 +75,8 @@ class _RecordingsPageState extends State<RecordingsPage> {
     setState(() {});
   }
 
+  /// Loads the stored recordings from [SharedPreferences]
+  /// Sets [_recordings] to the loaded recordings
   Future<void> loadRecordings() async {
     super.initState();
     final prefs = await SharedPreferences.getInstance();
@@ -82,6 +91,8 @@ class _RecordingsPageState extends State<RecordingsPage> {
     });
   }
 
+  /// Stores all elements of [_recordings] in [SharedPreferences]
+  /// Enables awaiting the recordings being stored
   Future<void> storeRecordings() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setStringList(

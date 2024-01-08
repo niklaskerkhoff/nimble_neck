@@ -9,23 +9,25 @@ import 'package:nimble_neck/model/record_value.dart';
 import 'package:open_earable_flutter/src/open_earable_flutter.dart';
 
 import '../model/recording.dart';
+import '../utils/math_utils.dart';
 
-class RecordingEditorPage extends StatefulWidget {
-  final Recording? recording;
+/// Lets the user record new values
+/// Lets the user connect to an OpenEarable device
+class AddRecordingPage extends StatefulWidget {
+  /// Callback for when the user saves the new values
   final void Function(Recording) saveRecording;
+
+  /// OpenEarable instance to use for recording
   final OpenEarable openEarable;
 
-  const RecordingEditorPage(
-      {super.key,
-      this.recording,
-      required this.saveRecording,
-      required this.openEarable});
+  const AddRecordingPage(
+      {super.key, required this.saveRecording, required this.openEarable});
 
   @override
-  State<RecordingEditorPage> createState() => _RecordingEditorPageState();
+  State<AddRecordingPage> createState() => _AddRecordingPageState();
 }
 
-class _RecordingEditorPageState extends State<RecordingEditorPage> {
+class _AddRecordingPageState extends State<AddRecordingPage> {
   var controller = Flutter3DController();
 
   StreamSubscription? _sensorSubscription;
@@ -61,18 +63,19 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     super.initState();
     _setSensorListener();
 
-    Future.delayed(Duration.zero, () => _openDiscoveredDevicesDialog());
+    if (!widget.openEarable.bleManager.connected) {
+      Future.delayed(Duration.zero, () => _openDiscoveredDevicesDialog());
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final recording = widget.recording;
     bool isConnected = widget.openEarable.bleManager.connected;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        title: Text('${recording == null ? 'New' : 'Update'} Recording'),
+        title: const Text('New Recording'),
         actions: [
           Visibility(
               visible: _isRecording,
@@ -137,6 +140,8 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     );
   }
 
+  /// Opens a [DiscoveredDevicesDialog] for connection to [OpenEarable]
+  /// [_setSensorListener] after returning to this page
   _openDiscoveredDevicesDialog() async {
     await showDialog(
         context: context,
@@ -145,6 +150,9 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     _setSensorListener();
   }
 
+  /// Starts listening to the 3D values of the [OpenEarable] if connected
+  /// Norms the measured values using the start values
+  /// Tries to fix the yaw-value by using a threshold
   void _setSensorListener() {
     if (widget.openEarable.bleManager.connected) {
       final config =
@@ -162,10 +170,10 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
         final pitch = data['EULER']['PITCH'];
         final yaw = data['EULER']['YAW'];
 
-        _rollDegree = _radToDegree(roll) - _startRollDegree;
-        _pitchDegree = _radToDegree(pitch) - _startPitchDegree;
+        _rollDegree = radianToDegree(roll) - _startRollDegree;
+        _pitchDegree = radianToDegree(pitch) - _startPitchDegree;
         final sensorYawDegree =
-            _radToDegree(yaw) - _startYawDegree - yawDegreeCorrection;
+            radianToDegree(yaw) - _startYawDegree - yawDegreeCorrection;
 
         if ((sensorYawDegree - prevYawDegree).abs() > 0.1) {
           _yawDegree = sensorYawDegree;
@@ -189,6 +197,8 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     }
   }
 
+  /// Starts recording
+  /// Sets start values to norm the measured values
   void _startRecording() {
     _isRecording = true;
     _startRollDegree = _rollDegree;
@@ -196,6 +206,8 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     _startYawDegree = _yawDegree;
   }
 
+  /// Stops recording
+  /// Resets values to zero
   void _reset() {
     _isRecording = false;
     _startRollDegree = 0;
@@ -211,18 +223,19 @@ class _RecordingEditorPageState extends State<RecordingEditorPage> {
     _maxYawDegree = 0;
   }
 
-  double _radToDegree(double value) => value * 180 / math.pi;
-
+  /// Saves a new recording
   _save() {
     final recording = _createRecording();
     widget.saveRecording(recording);
     Navigator.of(context).pop();
   }
 
+  /// Sets the angles of the 3D-Head-Model
   _setCamera() {
     controller.setCameraOrbit(-_yawDegree, -_pitchDegree + 90, 500);
   }
 
+  /// Creates and returns a [Recording] instance from the measured values and the current [DateTime]
   Recording _createRecording() => Recording(
       datetime: DateTime.now(),
       roll:
